@@ -1,3 +1,14 @@
 .editingInput {
     border-style: none;
 }
+.itemLabel {
+    display: inline-block;
+    width: 120px;
+    margin: 0 10px;
+}
+button.close {
+    
+    font-size: 12px;
+    height: 18px;
+    width: 18px;
+}

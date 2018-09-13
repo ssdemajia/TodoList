@@ -1,12 +1,18 @@
 import React from "react"
-import ReactDom from 'react-dom'
 
+import moment from 'moment';
 import './TodoItem.css'
-
+moment.locale('zh');
+function formatTime(time) {
+    let second = parseInt(time % 60, 10);
+    let minute = parseInt(time / 60, 10) % 60;
+    let hour = parseInt(time / 3600, 10);
+    return `${hour}:${minute}:${second}`;
+}
 class TodoItem extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {'editing':false};
+        this.state = { 'editing': false, 'label': '' }; // label用于展示当前task状态
         this.deleteTask = this.deleteTask.bind(this);
         this.editTask = this.editTask.bind(this);
         this.toggleComplete = this.toggleComplete.bind(this);
@@ -19,22 +25,22 @@ class TodoItem extends React.Component {
     }
     editTask() {
         this.changeEditState();
-        this.props.toggleEdit({id:this.props.id, content:this.editRef.current.value});
-        console.log("edit"+this.editRef.current.value);
+        this.props.toggleEdit({ id: this.props.id, content: this.editRef.current.value });
+        console.log("edit" + this.editRef.current.value);
         console.log("edit");
     }
     toggleComplete(e) {
-        if (this.props.complete === "true") {
+        this.setState({ label: "任务已完成" });
+        if (this.props.complete === false) {
             this.props.toggleComplete(this.props.id);
         }
-        console.log(e);
     }
     changeEditState() {
         if (this.state.editing === true) {
-            this.setState({editing:false});
+            this.setState({ editing: false });
         }
         else {
-            this.setState({editing:true});
+            this.setState({ editing: true });
         }
     }
     componentDidUpdate() {
@@ -42,35 +48,49 @@ class TodoItem extends React.Component {
             console.log(this.editRef.current.select());
         }
     }
-    render() {
-        let content = this.props.content;
-        var itemChecked;
-        if (this.props.complete === "true") {
-            itemChecked = true;
+    componentDidMount() {
+        let current_timestamp = Date.parse(new Date()) / 1000;
+        let expire_time = this.props.expire_time;
+        console.log(current_timestamp, expire_time);
+        if (this.props.complete === true) {
+            this.setState({ label: "任务已完成" });
         }
         else {
-            itemChecked = false;
+            if (current_timestamp > expire_time) {
+                this.setState({ label: "任务到期" });
+            }
+            else {
+                let l = "剩余时间: " + formatTime(expire_time - current_timestamp);
+                this.setState({ label: l });
+            }
         }
+    }
+    render() {
+        let content = this.props.content;
+
         if (this.state.editing === true) {
-            content = <span>
-                <input 
-                        type="text" 
-                        className="editingInput"
-                        ref={this.editRef}
-                        />
-                <button type="button" onClick={this.editTask}>确认编辑</button>
+            content = 
+            <span >
+                <input
+                    type="text"
+                    className="editingInput"
+                    ref={this.editRef}
+                />
+                <button className="btn close" type="button" onClick={this.editTask}>确认</button>
             </span>
         }
         else {
-            content = <span onClick={this.changeEditState}>
+            content = <span className="" onClick={this.changeEditState}>
                 {this.props.content}
+                <button className="btn close " type="button" onClick={this.deleteTask}>删除</button>
             </span>
         }
         return (
-            <li>
-                <input type="checkbox" checked={this.complete} onChange={this.toggleComplete}/>
+            <li className="list-group-item">
+                <input className="form-check-input" type="checkbox" checked={this.props.complete} onChange={this.toggleComplete} />
+                <span className="itemLabel">{this.state.label}</span>
                 {content}
-                <button type="button" onClick={this.deleteTask}>删除记录</button>
+                
             </li>
         )
     }
