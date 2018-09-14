@@ -1,0 +1,4 @@
+Django==1.8.19
+django-cors-headers==2.4.0
+django-rest-framework==0.1.0
+djangorestframework==2.4.8

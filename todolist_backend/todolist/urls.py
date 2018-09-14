@@ -17,6 +17,6 @@ from django.contrib import admin
 
 
 urlpatterns = [
-    url('todo/', include('todo.urls')),
+    url('', include('todo.urls')),
     url(r'^admin/', include(admin.site.urls)),
 ]

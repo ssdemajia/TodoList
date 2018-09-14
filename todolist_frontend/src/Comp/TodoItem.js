@@ -74,6 +74,7 @@ class TodoItem extends React.Component {
                 <input
                     type="text"
                     className="editingInput"
+                    autocomplete="off"
                     ref={this.editRef}
                 />
                 <button className="btn close" type="button" onClick={this.editTask}>确认</button>
